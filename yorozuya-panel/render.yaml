@@ -1,0 +1,22 @@
+# YorozuyaPanel — نقشهٔ سرویس برای Render
+#
+# ⚠️ این پروژه داخل زیرپوشهٔ yorozuya-panel/ ریپو است. دیپلوی را دستی انجام بده
+#    (New → Web Service → Root Directory = yorozuya-panel)، نه با دکمهٔ Blueprint.
+#    اگر پروژه را به ریشهٔ ریپو منتقل کردی، همین فایل را می‌شه مستقیم Blueprint کرد.
+services:
+  - type: web
+    name: yorozuya-panel
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: SECRET_KEY
+        generateValue: true
+    # دیسک فقط روی پلن‌های پولی ساخته می‌شه (پلن رایگان دیسک ندارد).
+    # بعد از ارتقا، این بخش را از حالت کامنت دربیار تا state بین دیپلوی‌ها بمونه:
+    # disk:
+    #   name: yorozuya-data
+    #   mountPath: /app/data
+    #   sizeGB: 1

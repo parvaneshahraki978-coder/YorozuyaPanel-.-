@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>ورود · YorozuyaPanel</title>
+  <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="seigaiha">
+  <div class="rain" id="rain" aria-hidden="true"></div>
+
+  <main class="login-page">
+    <form class="login-card" id="login-form" autocomplete="current-password">
+      <img class="logo" src="/static/logo.svg" alt="لوگوی YorozuyaPanel" width="110" height="110">
+      <h1>YorozuyaPanel</h1>
+      <div class="sub">万事屋 · پنل مدیریت کانفیگ</div>
+
+      <p class="login-error" id="login-error" role="alert" hidden></p>
+
+      <div class="field">
+        <label for="password">رمز ورود</label>
+        <input id="password" name="password" type="password" class="ltr" required autofocus placeholder="••••••••">
+      </div>
+
+      <button class="btn primary" type="submit">ورود به تابلو 🍓</button>
+
+      <p class="login-foot">
+        رمز رو از هر کسی نگیر، حتی از تابلوی سر کوچه 🍓<br>
+        نسخه ۱.۰.۰ · با شیر توت‌فرنگی ساخته شده
+      </p>
+    </form>
+  </main>
+
+  <script>
+    (() => {
+      // بارون توت‌فرنگی 🍓 (با prefers-reduced-motion در CSS خاموش می‌شه)
+      const rain = document.getElementById('rain');
+      for (let i = 0; i < 26; i += 1) {
+        const berry = document.createElement('span');
+        berry.className = 'berry';
+        berry.textContent = '🍓';
+        berry.style.left = `${Math.random() * 100}vw`;
+        berry.style.fontSize = `${14 + Math.random() * 18}px`;
+        berry.style.animationDuration = `${6 + Math.random() * 8}s`;
+        berry.style.animationDelay = `${-Math.random() * 12}s`;
+        rain.appendChild(berry);
+      }
+
+      const form = document.getElementById('login-form');
+      const error = document.getElementById('login-error');
+      const button = form.querySelector('button');
+      const idleText = button.textContent;
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        error.hidden = true;
+        button.disabled = true;
+        button.textContent = 'در حال ورود…';
+        try {
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: form.password.value }),
+          });
+          if (res.ok) {
+            location.replace('/panel');
+            return;
+          }
+          const data = await res.json().catch(() => ({}));
+          error.textContent = data.detail || 'ورود ناموفق بود';
+          error.hidden = false;
+          form.password.select();
+        } catch {
+          error.textContent = 'ارتباط با سرور برقرار نشد';
+          error.hidden = false;
+        } finally {
+          button.disabled = false;
+          button.textContent = idleText;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

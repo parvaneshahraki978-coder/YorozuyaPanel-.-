@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>پنل مدیریت · YorozuyaPanel</title>
+  <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="seigaiha">
+  <header class="topbar">
+    <div class="brand">
+      <img src="/static/logo.svg" alt="" width="52" height="52">
+      <div>
+        <h1>YorozuyaPanel <small>v1.0.0</small></h1>
+        <span>万事屋 · پنل مدیریت کانفیگ</span>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="بخش‌های پنل">
+      <a class="tab-btn" href="#dashboard" data-tab="dashboard">📊 داشبورد</a>
+      <a class="tab-btn" href="#users" data-tab="users">👥 کاربران</a>
+      <a class="tab-btn" href="#nodes" data-tab="nodes">🛰 نودها</a>
+      <a class="tab-btn" href="#tools" data-tab="tools">🧰 ابزار</a>
+      <a class="tab-btn" href="#settings" data-tab="settings">⚙️ تنظیمات</a>
+    </nav>
+    <button class="btn light" id="logout-btn" type="button">🚪 خروج</button>
+  </header>
+
+  <main class="container">
+    <!-- ───────── داشبورد ───────── -->
+    <section class="tab" id="tab-dashboard" hidden>
+      <div class="joke">
+        <span class="emoji" aria-hidden="true">🍓</span>
+        <p id="joke-text">…</p>
+        <button class="btn small ghost" id="joke-next" type="button">جمله بعدی</button>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="grid-2">
+        <section class="card" id="server-card">
+          <h2>🌍 آی‌پی و کشور سرور</h2>
+          <p class="muted">در حال گرفتن اطلاعات…</p>
+        </section>
+        <section class="card">
+          <h2>⚡ میانبرها</h2>
+          <div class="actions-col">
+            <button class="btn primary" id="quick-new-user" type="button">➕ کاربر جدید</button>
+            <a class="btn" href="#nodes">🛰 مدیریت نودها</a>
+            <a class="btn" href="#settings">🗄 بکاپ و تنظیمات</a>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ───────── کاربران ───────── -->
+    <section class="tab" id="tab-users" hidden>
+      <div class="toolbar">
+        <div class="search">
+          <input id="user-search" type="search" class="ltr" placeholder="جستجوی نام کاربری یا یادداشت…" autocomplete="off">
+        </div>
+        <select id="user-filter" aria-label="فیلتر وضعیت">
+          <option value="all">همه وضعیت‌ها</option>
+          <option value="active">فعال</option>
+          <option value="expired">منقضی</option>
+          <option value="disabled">غیرفعال</option>
+          <option value="limit_reached">حجم تمام شده</option>
+        </select>
+        <span class="muted" id="user-count"></span>
+        <button class="btn primary" id="btn-new-user" type="button">➕ کاربر جدید</button>
+      </div>
+      <div class="items" id="user-list"></div>
+    </section>
+
+    <!-- ───────── نودها ───────── -->
+    <section class="tab" id="tab-nodes" hidden>
+      <div class="toolbar">
+        <p class="muted" style="margin:0;flex:1">
+          نودها برای همه کاربرها ساخته می‌شن. چک نود: resolve + اتصال TCP (تایم‌اوت ۵ ثانیه).
+        </p>
+        <button class="btn" id="btn-check-all" type="button">⚡ چک همه</button>
+        <button class="btn primary" id="btn-new-node" type="button">➕ نود جدید</button>
+      </div>
+      <div class="items" id="node-list"></div>
+    </section>
+
+    <!-- ───────── ابزار ───────── -->
+    <section class="tab" id="tab-tools" hidden>
+      <section class="card">
+        <h2>🧰 جست‌وجوی آی‌پی یا دامنه</h2>
+        <p class="muted">آی‌پی، دامنه یا URL بده تا کشور، شهر و ISP رو نشونت بدم.</p>
+        <form id="lookup-form" class="copy-row">
+          <input id="lookup-input" class="ltr" type="text" placeholder="8.8.8.8 یا example.com" required autocomplete="off">
+          <button class="btn primary" type="submit">🔍 جست‌وجو</button>
+        </form>
+        <div id="lookup-result" class="lookup-result"></div>
+      </section>
+    </section>
+
+    <!-- ───────── تنظیمات ───────── -->
+    <section class="tab" id="tab-settings" hidden>
+      <div class="grid-2">
+        <section class="card">
+          <h2>🔗 آدرس لینک‌های اشتراک</h2>
+          <form id="settings-form">
+            <div class="field">
+              <label for="sub-base-input">آدرس عمومی پنل (خالی = خودکار از همین سایت)</label>
+              <input id="sub-base-input" class="ltr" type="url" placeholder="https://yorozuya-panel.onrender.com">
+            </div>
+            <p class="muted">آدرس فعلی در لینک‌ها: <b class="ltr" id="effective-base">—</b></p>
+            <button class="btn primary" type="submit">💾 ذخیره</button>
+          </form>
+        </section>
+        <section class="card">
+          <h2>🗄 بکاپ و ریستور</h2>
+          <p class="muted">بکاپ شامل کاربران، نودها و کش کشورهاست. ریستور، اطلاعات فعلی را کامل جایگزین می‌کند.</p>
+          <a class="btn" href="/api/backup">⬇️ دانلود بکاپ JSON</a>
+          <form id="restore-form" class="restore">
+            <input id="restore-file" type="file" accept="application/json,.json">
+            <button class="btn danger" type="submit">♻️ ریستور از فایل</button>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <!-- ───────── مودال کاربر ───────── -->
+  <div class="modal" id="modal-user" hidden>
+    <form class="modal-box" id="user-form" autocomplete="off">
+      <header class="modal-head">
+        <h3 id="user-modal-title">کاربر</h3>
+        <button class="x" type="button" data-close aria-label="بستن">✕</button>
+      </header>
+      <div class="modal-body">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-username">نام کاربری</label>
+            <input id="f-username" name="username" class="ltr" required maxlength="32" placeholder="ali_01">
+          </div>
+          <div class="field">
+            <label for="f-limit">سقف ترافیک (گیگ — ۰ = نامحدود)</label>
+            <input id="f-limit" name="limit_gb" type="number" class="ltr" min="0" step="0.5" value="0">
+          </div>
+          <div class="field" id="used-field">
+            <label for="f-used">مصرف فعلی (گیگ)</label>
+            <input id="f-used" name="used_gb" type="number" class="ltr" min="0" step="0.01" value="0">
+          </div>
+          <div class="field">
+            <label for="f-expires">تاریخ انقضا</label>
+            <input id="f-expires" name="expires" type="date" class="ltr">
+            <span class="muted" id="expires-hint">نامحدود</span>
+            <div class="chips" id="expires-chips">
+              <button class="chip" type="button" data-days="7">+۷ روز</button>
+              <button class="chip" type="button" data-days="30">+۳۰ روز</button>
+              <button class="chip" type="button" data-days="90">+۹۰ روز</button>
+              <button class="chip" type="button" data-days="0">بدون انقضا</button>
+            </div>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" name="enabled"> فعال باشد</label>
+        <div class="field">
+          <label for="f-note">یادداشت</label>
+          <textarea id="f-note" name="note" rows="2" maxlength="200"></textarea>
+        </div>
+      </div>
+      <footer class="modal-foot">
+        <button class="btn primary" type="submit">💾 ذخیره</button>
+        <button class="btn ghost" type="button" data-close>انصراف</button>
+      </footer>
+    </form>
+  </div>
+
+  <!-- ───────── مودال نود ───────── -->
+  <div class="modal" id="modal-node" hidden>
+    <form class="modal-box wide" id="node-form" autocomplete="off">
+      <header class="modal-head">
+        <h3 id="node-modal-title">نود</h3>
+        <button class="x" type="button" data-close aria-label="بستن">✕</button>
+      </header>
+      <div class="modal-body">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="field">
+            <label for="n-name">نام نود</label>
+            <input id="n-name" name="name" required maxlength="60" placeholder="آلمان ۱">
+          </div>
+          <div class="field">
+            <label for="n-address">آدرس (IP یا دامنه)</label>
+            <input id="n-address" name="address" class="ltr" required maxlength="260" placeholder="de1.example.com">
+          </div>
+          <div class="field">
+            <label for="n-port">پورت</label>
+            <input id="n-port" name="port" type="number" class="ltr" min="1" max="65535" value="443" required>
+          </div>
+          <div class="field">
+            <label for="n-protocol">پروتکل</label>
+            <select id="n-protocol" name="protocol">
+              <option value="vless">VLESS</option>
+              <option value="vmess">VMess</option>
+              <option value="trojan">Trojan</option>
+              <option value="ss">Shadowsocks</option>
+            </select>
+          </div>
+          <div class="field" data-show="protocol:vless,vmess,trojan">
+            <label for="n-network">شبکه (transport)</label>
+            <select id="n-network" name="network">
+              <option value="tcp">TCP</option>
+              <option value="ws">WebSocket</option>
+              <option value="grpc">gRPC</option>
+            </select>
+          </div>
+          <div class="field" data-show="protocol:vless,vmess,trojan">
+            <label for="n-security">امنیت</label>
+            <select id="n-security" name="security">
+              <option value="none">بدون (none)</option>
+              <option value="tls">TLS</option>
+              <option value="reality">REALITY</option>
+            </select>
+          </div>
+          <div class="field" data-show="protocol:vless,vmess,trojan;security:tls,reality">
+            <label for="n-sni">SNI</label>
+            <input id="n-sni" name="sni" class="ltr" maxlength="253" placeholder="www.example.com">
+          </div>
+          <div class="field" data-show="protocol:vless,vmess,trojan;security:tls,reality">
+            <label for="n-fp">Fingerprint</label>
+            <select id="n-fp" name="fp">
+              <option value="chrome">chrome</option>
+              <option value="firefox">firefox</option>
+              <option value="safari">safari</option>
+              <option value="edge">edge</option>
+              <option value="ios">ios</option>
+              <option value="android">android</option>
+              <option value="random">random</option>
+              <option value="randomized">randomized</option>
+            </select>
+          </div>
+          <div class="field" data-show="protocol:vless,vmess,trojan;security:tls,reality">
+            <label for="n-alpn">ALPN</label>
+            <input id="n-alpn" name="alpn" class="ltr" placeholder="h2,http/1.1">
+          </div>
+          <div class="field" data-show="protocol:vless,vmess,trojan;network:ws">
+            <label for="n-host">Host (WebSocket)</label>
+            <input id="n-host" name="host" class="ltr" maxlength="253">
+          </div>
+          <div class="field" data-show="protocol:vless,vmess,trojan;network:ws,grpc">
+            <label for="n-path">Path (ws) / serviceName (grpc)</label>
+            <input id="n-path" name="path" class="ltr" maxlength="200" placeholder="/ws">
+          </div>
+          <div class="field" data-show="protocol:vless,trojan;security:reality">
+            <label for="n-pbk">Public key (pbk)</label>
+            <input id="n-pbk" name="reality_pbk" class="ltr" maxlength="100">
+          </div>
+          <div class="field" data-show="protocol:vless,trojan;security:reality">
+            <label for="n-sid">Short ID (sid)</label>
+            <input id="n-sid" name="reality_sid" class="ltr" maxlength="32">
+          </div>
+          <div class="field" data-show="protocol:vless,trojan;security:reality">
+            <label for="n-spx">SpiderX (spx)</label>
+            <input id="n-spx" name="reality_spx" class="ltr" maxlength="200" placeholder="/">
+          </div>
+          <div class="field" data-show="protocol:vless;network:tcp">
+            <label for="n-flow">Flow</label>
+            <select id="n-flow" name="flow">
+              <option value="">بدون</option>
+              <option value="xtls-rprx-vision">xtls-rprx-vision</option>
+            </select>
+          </div>
+          <div class="field" data-show="protocol:ss">
+            <label for="n-ss-method">متد</label>
+            <input id="n-ss-method" name="ss_method" class="ltr" list="ss-methods" maxlength="60" placeholder="2022-blake3-aes-128-gcm">
+            <datalist id="ss-methods">
+              <option value="aes-128-gcm"></option>
+              <option value="aes-256-gcm"></option>
+              <option value="chacha20-ietf-poly1305"></option>
+              <option value="2022-blake3-aes-128-gcm"></option>
+              <option value="2022-blake3-aes-256-gcm"></option>
+              <option value="2022-blake3-chacha20-poly1305"></option>
+            </datalist>
+          </div>
+          <div class="field" data-show="protocol:ss">
+            <label for="n-ss-pass">رمز (password)</label>
+            <input id="n-ss-pass" name="ss_password" class="ltr" maxlength="200">
+          </div>
+        </div>
+        <p class="hint">
+          REALITY فقط برای VLESS و Trojan است و public key لازم دارد. آدرس می‌تونه IP یا دامنه باشه.
+          لینک‌ها خودکار ساخته می‌شن و UUID هر کاربر استفاده می‌شه.
+        </p>
+      </div>
+      <footer class="modal-foot">
+        <button class="btn primary" type="submit">💾 ذخیره نود</button>
+        <button class="btn ghost" type="button" data-close>انصراف</button>
+      </footer>
+    </form>
+  </div>
+
+  <!-- ───────── مودال لینک‌ها ───────── -->
+  <div class="modal" id="modal-links" hidden>
+    <div class="modal-box wide">
+      <header class="modal-head">
+        <h3 id="links-title">لینک‌ها</h3>
+        <button class="x" type="button" data-close aria-label="بستن">✕</button>
+      </header>
+      <div class="modal-body" id="links-body"></div>
+    </div>
+  </div>
+
+  <!-- ───────── تأیید عملیات ───────── -->
+  <div class="modal" id="modal-confirm" hidden>
+    <div class="modal-box small-box">
+      <header class="modal-head">
+        <h3 id="confirm-title">مطمئنی؟</h3>
+      </header>
+      <div class="modal-body">
+        <p id="confirm-text"></p>
+      </div>
+      <footer class="modal-foot">
+        <button class="btn" id="confirm-ok" type="button">تأیید</button>
+        <button class="btn ghost" type="button" data-close>انصراف</button>
+      </footer>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

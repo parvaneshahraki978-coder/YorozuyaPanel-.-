@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>اشتراک شما · YorozuyaPanel</title>
+  <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="seigaiha">
+  <main class="sub-wrap">
+    <header class="sub-head">
+      <img src="/static/logo.svg" alt="" width="96" height="96">
+      <h1>اشتراک شما 🍓</h1>
+      <span class="muted">YorozuyaPanel · 万事屋</span>
+    </header>
+
+    <section class="card sub-card" id="sub-card">
+      <p class="muted">در حال بارگذاری…</p>
+    </section>
+
+    <p class="sub-footer">
+      این لینک مخصوص خودته؛ با دیگران به اشتراک نذار 🔐
+    </p>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+      const card = document.getElementById('sub-card');
+      const esc = (value) =>
+        String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+      const nf = new Intl.NumberFormat('fa-IR');
+      const fmtDay = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric', month: 'long', day: 'numeric' });
+      const GB = 1024 ** 3;
+      const STATUS = {
+        active: ['فعال', 'active'],
+        expired: ['منقضی شده', 'expired'],
+        disabled: ['غیرفعال', 'disabled'],
+        limit_reached: ['حجم تمام شده', 'limit_reached'],
+      };
+      const MESSAGES = {
+        expired: 'مدت این اشتراک تموم شده. برای تمدید پیام بده ⏳',
+        disabled: 'این اشتراک فعلاً غیرفعاله. برای فعال‌سازی پیام بده 🍓',
+        limit_reached: 'حجم این اشتراک تموم شده. برای افزایش حجم پیام بده 📦',
+      };
+      const PROTO = { vless: 'VLESS', vmess: 'VMess', trojan: 'Trojan', ss: 'Shadowsocks' };
+
+      const fmtBytes = (bytes) => {
+        const n = Number(bytes) || 0;
+        if (n >= GB) return `${nf.format(Math.round((n / GB) * 100) / 100)} گیگ`;
+        if (n >= 1024 ** 2) return `${nf.format(Math.round((n / 1024 ** 2) * 10) / 10)} مگ`;
+        return `${nf.format(n)} بایت`;
+      };
+      const daysText = (days) => {
+        if (days === null || days === undefined) return '';
+        if (days < 0) return '(منقضی)';
+        if (days === 0) return '(امروز تمام می‌شه)';
+        return `(${nf.format(days)} روز مونده)`;
+      };
+
+      function render(d) {
+        const [label, cls] = STATUS[d.status] || [d.status, 'disabled'];
+        const active = d.status === 'active';
+        const traffic = d.limit_bytes > 0
+          ? `${fmtBytes(d.used_bytes)} از ${fmtBytes(d.limit_bytes)}`
+          : `${fmtBytes(d.used_bytes)} · نامحدود`;
+        const expiry = d.expires_at
+          ? `${fmtDay.format(new Date(d.expires_at))} ${daysText(d.days_left)}`
+          : 'بدون تاریخ انقضا';
+        const pct = d.usage_percent;
+        const bar = pct === null ? '' : `<div class="bar ${pct >= 100 ? 'full' : pct >= 80 ? 'warn' : ''}"><span style="width:${Math.min(pct, 100)}%"></span></div>`;
+
+        let body = `<p class="notice">${esc(MESSAGES[d.status] || 'این اشتراک فعال نیست')}</p>`;
+        if (active) {
+          const apps = d.apps.map((a) => `<a class="app-btn" href="${esc(a.url)}">${esc(a.name)}<small>${esc(a.platform)}</small></a>`).join('');
+          const nodes = d.nodes.length
+            ? d.nodes.map((n) => {
+              const state = n.online === true
+                ? `<span><span class="dot on"></span>${nf.format(n.latency_ms ?? 0)} ms</span>`
+                : n.online === false
+                  ? '<span><span class="dot off"></span>آفلاین</span>'
+                  : '<span><span class="dot"></span>—</span>';
+              return `<li><span>${esc(n.flag || '🌐')} ${esc(n.name)} <small class="muted">${esc(PROTO[n.protocol] || n.protocol)}</small></span>${state}</li>`;
+            }).join('')
+            : '<li class="muted">هنوز نودی برای این اشتراک فعال نشده</li>';
+          body = `
+            <div class="qr-wrap"><img src="${esc(d.qr_url)}" alt="QR کد اشتراک" width="230" height="230"></div>
+            <div class="field">
+              <label>لینک اشتراک</label>
+              <div class="copy-row">
+                <input class="ltr" type="text" readonly value="${esc(d.sub_url)}">
+                <button class="btn" type="button" data-copy="${esc(d.sub_url)}">📋 کپی</button>
+              </div>
+            </div>
+            <h3>ایمپورت مستقیم در اپ</h3>
+            <div class="app-grid">${apps}</div>
+            <h3>نودها</h3>
+            <ul class="node-list">${nodes}</ul>`;
+        }
+
+        card.innerHTML = `
+          <div class="username">🍓 ${esc(d.username)}</div>
+          <span class="badge ${cls}">${esc(label)}</span>
+          <dl class="kv">
+            <dt>ترافیک</dt><dd>${esc(traffic)}</dd>
+            <dt>انقضا</dt><dd>${esc(expiry)}</dd>
+          </dl>
+          ${bar}
+          ${body}`;
+      }
+
+      card.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-copy]');
+        if (!btn) return;
+        const text = btn.dataset.copy;
+        const done = () => { btn.textContent = 'کپی شد ✅'; setTimeout(() => { btn.textContent = '📋 کپی'; }, 1500); };
+        if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, done);
+        else done();
+      });
+
+      const key = decodeURIComponent(location.pathname.replace(/^\/p\//, '').replace(/\/+$/, ''));
+      fetch(`/api/public/sub/${encodeURIComponent(key)}`, { headers: { Accept: 'application/json' } })
+        .then(async (res) => {
+          if (!res.ok) {
+            throw new Error(res.status === 404
+              ? 'این لینک پیدا نشد. از پشتیبانی لینک جدید بخواه 🍓'
+              : 'خطا در دریافت اطلاعات، کمی بعد دوباره امتحان کن');
+          }
+          return res.json();
+        })
+        .then(render)
+        .catch((err) => {
+          card.innerHTML = `<div class="sub-error">${esc(err.message)}</div>`;
+        });
+    })();
+  </script>
+</body>
+</html>

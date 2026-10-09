@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">YorozuyaPanel</title>
+  <desc id="logo-desc">پاکت شیر توت‌فرنگی با نی، زیر تابلوی چوبی 万事屋</desc>
+  <defs>
+    <linearGradient id="yz-wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9a6a3f"/>
+      <stop offset="1" stop-color="#4a2c17"/>
+    </linearGradient>
+    <linearGradient id="yz-milk" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fffdf8"/>
+      <stop offset="1" stop-color="#f4e1e7"/>
+    </linearGradient>
+    <linearGradient id="yz-band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff7aa0"/>
+      <stop offset="1" stop-color="#e63e6d"/>
+    </linearGradient>
+  </defs>
+
+  <!-- نی شیر -->
+  <path d="M150 104 L184 44" stroke="#ff7aa0" stroke-width="8" stroke-linecap="round"/>
+  <path d="M150 104 L184 44" stroke="#ffffff" stroke-width="8" stroke-linecap="butt" stroke-dasharray="6 9" opacity="0.8"/>
+
+  <!-- تابلوی چوبی 万事屋 -->
+  <rect x="16" y="14" width="208" height="80" rx="10" fill="url(#yz-wood)" stroke="#2f1a0d" stroke-width="5"/>
+  <rect x="25" y="23" width="190" height="62" rx="6" fill="none" stroke="#d9b98a" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.7"/>
+  <circle cx="30" cy="27" r="3" fill="#f1e2c6"/>
+  <circle cx="210" cy="27" r="3" fill="#f1e2c6"/>
+  <circle cx="30" cy="81" r="3" fill="#f1e2c6"/>
+  <circle cx="210" cy="81" r="3" fill="#f1e2c6"/>
+  <text x="120" y="77" text-anchor="middle" font-family="'Yu Gothic','Hiragino Sans','Noto Sans JP','MS Gothic',sans-serif" font-size="50" font-weight="900" fill="#fff6e6" stroke="#2f1a0d" stroke-width="2" paint-order="stroke">万事屋</text>
+
+  <!-- پاکت شیر -->
+  <path d="M70 110 L120 98 L170 110 L170 218 Q170 226 162 226 L78 226 Q70 226 70 218 Z" fill="url(#yz-milk)" stroke="#e7b9c7" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M70 110 L120 98 L170 110 L120 122 Z" fill="#ffffff" stroke="#e7b9c7" stroke-width="3.5" stroke-linejoin="round"/>
+
+  <!-- نوار توت‌فرنگی -->
+  <rect x="71" y="152" width="98" height="46" fill="url(#yz-band)"/>
+  <path d="M71 152 H169" stroke="#c92a58" stroke-width="2" opacity="0.35"/>
+
+  <!-- توت‌فرنگی 🍓 -->
+  <path d="M120 191 C108 184 101 177 101 169 C101 161 108 157 120 157 C132 157 139 161 139 169 C139 177 132 184 120 191 Z" fill="#e63e6d" stroke="#b3203f" stroke-width="1.5"/>
+  <path d="M120 158 L109 152 L112 158 L103 160 L115 162 L120 157 L125 162 L137 160 L128 158 L131 152 Z" fill="#3f9d62"/>
+  <g fill="#ffe9a8">
+    <ellipse cx="109" cy="168" rx="1.7" ry="2.5"/>
+    <ellipse cx="120" cy="165" rx="1.7" ry="2.5"/>
+    <ellipse cx="131" cy="168" rx="1.7" ry="2.5"/>
+    <ellipse cx="114" cy="178" rx="1.7" ry="2.5"/>
+    <ellipse cx="126" cy="178" rx="1.7" ry="2.5"/>
+    <ellipse cx="120" cy="186" rx="1.5" ry="2.2"/>
+  </g>
+</svg>

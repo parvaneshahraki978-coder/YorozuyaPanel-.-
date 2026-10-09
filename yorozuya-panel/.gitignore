@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# داده و اسرار — هرگز commit نشن
+data/
+yorozuya_state*.json
+*.tmp
+.env
+.env.*
+
+# متفرقه
+.DS_Store
+.vscode/
+.idea/
+*.log
